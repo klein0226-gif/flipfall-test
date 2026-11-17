@@ -906,7 +906,7 @@ var SPACEDEF={"home":["집","🏠",0],"salon":["미용실","💇",600],"office":
   var OLDZ = { balcony: 40, bath: 80, living: 140, kitchen: 200, dress: 300 }, OLDS = [0, 30, 70];
   function clampI(v, lo, hi, d) { v = Math.floor(+v); return isFinite(v) ? Math.max(lo, Math.min(hi, v)) : d; }
   // 방은 빈 바닥이다. 구역·벽은 미리 정해두지 않고, 칸막이(벽 조각·문틀)를 가구처럼 직접 놓는다. 크기마다 칸 수만 정한다.
-  var SIZE_N = { home: [10, 12, 14], salon: [8, 10, 12], office: [8, 10, 12] };
+  var SIZE_N = { home: [12, 16, 20], salon: [10, 13, 16], office: [10, 13, 16] }; // 보스 11/18 "방 크기를 더 키우자" (옛 10·12·14 / 8·10·12). 늘기만 하므로 옛 저장 좌표는 그대로 들어감
   var SIZEN = { home: ["아파트 34평", "펜트하우스", "대저택"], salon: ["작은 가게", "큰 가게", "프리미엄 샵"], office: ["작은 사무실", "중형 사무실", "본사 빌딩"] };
   function PL(r) { var a = SIZE_N[r.sp] || SIZE_N.home; return { n: a[clampI(r.size, 1, 3, 1) - 1] }; }
   // 칸막이: 항목 {i:"edge_wall"|"edge_door", d:"v"|"h", x, y}. v = (x,y)와 (x+1,y) 사이, h = (x,y)와 (x,y+1) 사이
@@ -1259,11 +1259,19 @@ var SPACEDEF={"home":["집","🏠",0],"salon":["미용실","💇",600],"office":
     if (!cur) return; if (cur.orig) { var h = save.home2, id = cur.it.i; h.owned[id] = Math.min(99, (h.owned[id] || 0) + 1); persist(); roomMsg(IT[id].n + "을(를) 보관함에 넣었어요 (다시 놓으면 무료)"); }
     cur = null; dragging = false; renderRoom();
   }
+  // 집기: 그림 영역을 먼저 보고, 빗나가면 MINHIT(캔버스 단위, 폰 360폭에서 약 28px)까지 넓힌 영역 중 중심이 가장 가까운 것. 방이 20칸까지 커져 1칸 소품이 손가락보다 작아져서 넣음(11/18)
+  var MINHIT = 30;
+  function hitAt(p) {
+    var i, q, best = null, bd = 1e9;
+    for (i = hits.length - 1; i >= 0; i--) { q = hits[i]; if (p[0] >= q.x && p[0] <= q.x + q.w && p[1] >= q.y && p[1] <= q.y + q.h) return q; }
+    for (i = hits.length - 1; i >= 0; i--) { q = hits[i]; var cx = q.x + q.w / 2, cy = q.y + q.h / 2, hw = Math.max(q.w, MINHIT) / 2, hh = Math.max(q.h, MINHIT) / 2, dx = Math.abs(p[0] - cx), dy = Math.abs(p[1] - cy); if (dx <= hw && dy <= hh) { var dd = dx * dx + dy * dy; if (dd < bd) { bd = dd; best = q; } } }
+    return best;
+  }
   rcv.style.touchAction = "none";
   rcv.addEventListener("pointerdown", function (e) {
     tapP = [e.clientX, e.clientY]; if (view) { tapOK = 1; return; } var p = ptr(e);
     if (cur) { aimTo(p[0], p[1]); dragging = true; try { rcv.setPointerCapture(e.pointerId); } catch (x) {} return; }
-    for (var i = hits.length - 1; i >= 0; i--) { var q = hits[i]; if (p[0] >= q.x && p[0] <= q.x + q.w && p[1] >= q.y && p[1] <= q.y + q.h) { pickUp(q); dragging = true; try { rcv.setPointerCapture(e.pointerId); } catch (x) {} return; } }
+    var q = hitAt(p); if (q) { pickUp(q); dragging = true; try { rcv.setPointerCapture(e.pointerId); } catch (x) {} return; }
     tapOK = 1;
   });
   rcv.addEventListener("pointermove", function (e) { if (!dragging || !cur) return; var p = ptr(e); aimTo(p[0], p[1]); });
