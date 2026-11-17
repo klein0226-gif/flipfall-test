@@ -28,6 +28,17 @@ ol{margin:0;padding-left:1.3em}li{margin:6px 0}
 
 <button class="big" id="inst" style="background:#3a2f4a;color:#f6eefb;font-size:22px">📱 폰에 앱처럼 설치하기 (한 번만 누르기)</button>
 
+<div class="box" id="apk" style="display:none">
+  <a class="big" href="https://github.com/klein0226-gif/flipfall-test/releases/download/v15-test/flipfall-debug.apk" style="background:#6fd3a0;color:#08241a;font-size:24px">🤖 안드로이드 앱 파일 받기</a>
+  <h2 style="margin-top:14px">받은 뒤에는 이렇게 해요 (4번만 누르면 돼요)</h2>
+  <ol>
+   <li>위 초록 버튼을 누르면 파일이 받아져요. "이 파일은 위험할 수 있어요"가 나오면 <b>그래도 다운로드</b>(또는 <b>확인</b>)를 눌러요.</li>
+   <li>맨 위에 뜨는 <b>다운로드 완료</b> 알림(또는 파일 앱의 <b>flipfall-debug.apk</b>)을 눌러요.</li>
+   <li>"보안상 설치할 수 없어요" 같은 창이 나오면 <b>설정</b>을 누르고, <b>이 출처 허용</b> 스위치를 켠 뒤 <b>뒤로가기</b>를 눌러요. (처음 한 번만이에요)</li>
+   <li><b>설치</b>를 누르고, 끝나면 <b>열기</b>를 눌러요.</li>
+  </ol>
+  <p class="mini" style="margin-top:8px">구글 플레이에 올라간 앱이 아니라서 안드로이드가 한 번 물어보는 거예요. 앱은 위험한 것이 아니에요. 어려우면 위의 <b>지금 해보기</b>를 눌러도 똑같이 할 수 있어요.</p>
+</div>
 <div class="box" id="ios">
   <h2>아이폰이면 이렇게 해요</h2>
   <ol><li>Safari(나침반 모양)로 이 페이지를 열어요.</li><li>아래 가운데 <b>공유 버튼(네모에 화살표)</b>을 눌러요.</li><li><b>"홈 화면에 추가"</b>를 누르면 끝!</li></ol>
@@ -43,6 +54,7 @@ ol{margin:0;padding-left:1.3em}li{margin:6px 0}
 <script>
 var ua=navigator.userAgent||"";
 if(/KAKAOTALK|; wv\)|NAVER\(inapp|Instagram|FBAN|FBAV/i.test(ua)){document.getElementById("kakao").style.display="block"}
+if(/Android/i.test(ua)){document.getElementById("apk").style.display="block"}
 if(/iPhone|iPad/.test(ua)&&!window.navigator.standalone){document.getElementById("ios").style.display="block"}
 var dp=null,b=document.getElementById("inst");
 window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();dp=e;b.style.display="block"});
